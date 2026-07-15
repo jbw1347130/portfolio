@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alex Chen | Designer 设计师</title>
+    <meta name="description" content="Alex Chen - Creative Designer Portfolio | 创意设计师作品集">
+    <style>
+        /* ========================================
+           CSS RESET & VARIABLES
+           ======================================== */
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f35;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --accent: #3b82f6;
+            --accent-light: #60a5fa;
+            --accent-glow: rgba(59, 130, 246, 0.4);
+            --cyan: #06b6d4;
+            --purple: #818cf8;
+            --border: rgba(59, 130, 246, 0.2);
+            --glass: rgba(17, 24, 39, 0.85);
+            --radius: 12px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* ========================================
+           CANVAS BACKGROUND
+           ======================================== */
+        #particle-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ========================================
+           NAVBAR
+           ======================================== */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            padding: 16px 0;
+            transition: var(--transition);
+        }
+
+        .navbar.scrolled {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 0;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px; left: 0;
+            width: 0; height: 2px;
+            background: var(--accent);
+            transition: var(--transition);
+            border-radius: 1px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            width: 24px; height: 2px;
+            background: var(--text-primary);
+            transition: var(--transition);
+            border-radius: 2px;
+        }
+
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        /* ========================================
+           HERO SECTION
+           ======================================== */
+        .hero {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 24px 80px;
+        }
+
+        .hero-content {
+            max-width: 700px;
+        }
+
+        .hero-avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            margin: 0 auto 32px;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            padding: 3px;
+            animation: avatarPulse 3s ease-in-out infinite;
+        }
+
+        .hero-avatar-inner {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--accent);
+        }
+
+        @keyframes avatarPulse {
+            0%, 100% { box-shadow: 0 0 20px var(--accent-glow), 0 0 60px rgba(59, 130, 246, 0.15); }
+            50% { box-shadow: 0 0 40px var(--accent-glow), 0 0 100px rgba(59, 130, 246, 0.3); }
+        }
+
+        .hero-greeting {
+            font-size: 1rem;
+            color: var(--accent-light);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .hero-name {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #ffffff 0%, var(--accent-light) 50%, var(--cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-title {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+
+        .hero-title-cn {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            opacity: 0.7;
+            margin-bottom: 32px;
+        }
+
+        .typing-wrapper {
+            font-size: 1.1rem;
+            color: var(--cyan);
+            margin-bottom: 40px;
+            min-height: 28px;
+            font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: var(--cyan);
+            margin-left: 2px;
+            animation: blink 0.8s infinite;
+            vertical-align: text-bottom;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+            border: none;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #2563eb);
+            color: #fff;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.6);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* ========================================
+           SECTION COMMONS
+           ======================================== */
+        .section {
+            position: relative;
+            z-index: 1;
+            padding: 100px 24px;
+        }
+
+        .section-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .section-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--accent-light);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+        }
+
+        .section-line {
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--cyan));
+            margin: 0 auto;
+            border-radius: 2px;
+        }
+
+        /* ========================================
+           ABOUT SECTION
+           ======================================== */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .about-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .about-image {
+            width: 280px;
+            height: 320px;
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, var(--bg-card), #1e2a4a);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            color: var(--accent);
+            position: relative;
+        }
+
+        .about-image::before {
+            content: '';
+            position: absolute;
+            top: 12px; left: 12px;
+            width: 100%; height: 100%;
+            border: 2px solid var(--accent);
+            border-radius: var(--radius);
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .about-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .about-text h3 span {
+            color: var(--accent-light);
+            font-size: 1rem;
+            display: block;
+            font-weight: 400;
+            margin-bottom: 4px;
+        }
+
+        .about-text p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-light);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* ========================================
+           SKILLS SECTION
+           ======================================== */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .skill-category {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            transition: var(--transition);
+        }
+
+        .skill-category:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.1);
+        }
+
+        .skill-cat-icon {
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+
+        .skill-cat-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .skill-item {
+            margin-bottom: 16px;
+        }
+
+        .skill-item:last-child { margin-bottom: 0; }
+
+        .skill-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+        }
+
+        .skill-name { color: var(--text-primary); }
+        .skill-level { color: var(--text-secondary); }
+
+        .skill-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .skill-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--cyan));
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ========================================
+           PROJECTS SECTION
+           ======================================== */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .project-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .project-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
+        }
+
+        .project-thumb {
+            height: 200px;
+            background: linear-gradient(135deg, #1a2744, #1e3a5f);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-thumb::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(10, 14, 26, 0.6) 100%);
+        }
+
+        .project-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 14, 26, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .project-card:hover .project-overlay { opacity: 1; }
+
+        .project-overlay-text {
+            color: var(--accent-light);
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+        }
+
+        .project-info {
+            padding: 24px;
+        }
+
+        .project-info h4 {
+            font-size: 1.15rem;
+            margin-bottom: 4px;
+        }
+
+        .project-info .project-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 50px;
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-light);
+            border: 1px solid var(--border);
+        }
+
+        /* ========================================
+           EXPERIENCE SECTION
+           ======================================== */
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px; top: 0; bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent), var(--purple), transparent);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            transition: var(--transition);
+        }
+
+        .timeline-item:hover {
+            border-color: var(--accent);
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -33px; top: 32px;
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 2px solid var(--bg-primary);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .timeline-date {
+            font-size: 0.8rem;
+            color: var(--accent-light);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .timeline-role {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .timeline-company {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .timeline-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* ========================================
+           CONTACT SECTION
+           ======================================== */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 16px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: var(--transition);
+            outline: none;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(59, 130, 246, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .contact-text h5 {
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+        }
+
+        .contact-text span {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .social-link {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: var(--transition);
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-secondary);
+        }
+
+        .social-link:hover {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-light);
+            transform: translateY(-2px);
+        }
+
+        /* ========================================
+           FOOTER
+           ======================================== */
+        .footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 40px 24px;
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* ========================================
+           REVEAL ANIMATION
+           ======================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ========================================
+           MOBILE NAV
+           ======================================== */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 14, 26, 0.97);
+            z-index: 999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 32px;
+        }
+
+        .mobile-nav.active { display: flex; }
+
+        .mobile-nav a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 1.3rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .mobile-nav a:hover { color: var(--accent-light); }
+
+        /* ========================================
+           RESPONSIVE
+           ======================================== */
+        @media (max-width: 968px) {
+            .hero-name { font-size: 2.5rem; }
+            .about-grid { grid-template-columns: 1fr; text-align: center; }
+            .about-visual { order: -1; }
+            .about-image { width: 200px; height: 240px; font-size: 3.5rem; }
+            .about-stats { justify-content: center; }
+            .skills-grid { grid-template-columns: 1fr; }
+            .projects-grid { grid-template-columns: 1fr; }
+            .contact-grid { grid-template-columns: 1fr; }
+            .section-title { font-size: 2rem; }
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-name { font-size: 2rem; }
+            .hero-avatar { width: 100px; height: 100px; }
+            .hero-avatar-inner { font-size: 2rem; }
+            .about-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .stat-card { padding: 12px 8px; }
+            .stat-number { font-size: 1.4rem; }
+            .section { padding: 60px 16px; }
+            .hero-cta { flex-direction: column; align-items: center; }
+            .btn { width: 100%; max-width: 280px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Canvas 粒子背景 -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- ========================================
+     NAVBAR 导航栏
+     ======================================== -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">Alex.Chen</div>
+            <ul class="nav-links">
+                <li><a href="#about" data-lang="nav-about">About 关于</a></li>
+                <li><a href="#skills" data-lang="nav-skills">Skills 技能</a></li>
+                <li><a href="#projects" data-lang="nav-projects">Works 作品</a></li>
+                <li><a href="#experience" data-lang="nav-experience">Experience 经历</a></li>
+                <li><a href="#contact" data-lang="nav-contact">Contact 联系</a></li>
+            </ul>
+            <button class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 移动端菜单 -->
+    <div class="mobile-nav" id="mobileNav">
+        <a href="#about" onclick="closeMobileNav()">About 关于</a>
+        <a href="#skills" onclick="closeMobileNav()">Skills 技能</a>
+        <a href="#projects" onclick="closeMobileNav()">Works 作品</a>
+        <a href="#experience" onclick="closeMobileNav()">Experience 经历</a>
+        <a href="#contact" onclick="closeMobileNav()">Contact 联系</a>
+    </div>
+
+    <!-- ========================================
+     HERO 首屏
+     ======================================== -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-avatar">
+                <div class="hero-avatar-inner">🎨</div>
+            </div>
+            <p class="hero-greeting">Hello, I'm</p>
+            <h1 class="hero-name">Alex Chen</h1>
+            <p class="hero-title">Creative Designer & Visual Storyteller</p>
+            <p class="hero-title-cn">创意设计师 · 视觉叙事者</p>
+            <div class="typing-wrapper">
+                <span id="typingText"></span><span class="typing-cursor"></span>
+            </div>
+            <div class="hero-cta">
+                <a href="#projects" class="btn btn-primary">View My Work 查看作品</a>
+                <a href="#contact" class="btn btn-outline">Get In Touch 联系我</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+     ABOUT 关于我
+     ======================================== -->
+    <section class="section" id="about">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <p class="section-label">About Me 关于我</p>
+                <h2 class="section-title">Who I Am 我是谁</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="about-grid reveal">
+                <div class="about-visual">
+                    <div class="about-image">✨</div>
+                </div>
+                <div class="about-text">
+                    <h3>
+                        <span>Creative Designer</span>
+                        I design experiences that inspire.
+                    </h3>
+                    <p>
+                        我是一名充满热情的创意设计师，拥有 5 年以上数字产品设计经验。
+                        专注于品牌设计、UI/UX 和视觉传达，致力于将复杂的概念转化为
+                        简洁优雅的视觉体验。<br><br>
+                        <em>I'm a passionate creative designer with 5+ years of experience in digital product design.
+                        I specialize in branding, UI/UX, and visual communication, transforming complex ideas
+                        into elegant visual experiences.</em>
+                    </p>
+                    <div class="about-stats">
+                        <div class="stat-card">
+                            <span class="stat-number">5+</span>
+                            <span class="stat-label">Years 年经验</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">80+</span>
+                            <span class="stat-label">Projects 项目</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">50+</span>
+                            <span class="stat-label">Clients 客户</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+     SKILLS 技能
+     ======================================== -->
+    <section class="section" id="skills">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <p class="section-label">Skills 技能</p>
+                <h2 class="section-title">What I Do 我的能力</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="skills-grid reveal">
+                <!-- 设计工具 -->
+                <div class="skill-category">
+                    <div class="skill-cat-icon">🎯</div>
+                    <h3 class="skill-cat-title">Design Tools 设计工具</h3>
+                    <div class="skill-item">
+                        <div class="skill-info"><span class="skill-name">Figma</span><span class="skill-level">95%</span></div>
+                        <div class="skill-bar"><div class="skill-fill" data-width="95%" style="width:0"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-info"><span class="skill-name">Adobe Photoshop</span><span class="skill-level">90%</span></div>
+                        <div class="skill-bar"><div class="skill-fill" data-width="90%" style="width:0"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-info"><span class="skill-name">Adobe Illustrator</span><span class="skill-level">88%</span></div>
+                        <div class="skill-bar"><div class="skill-fill" data-width="88%" style="width:0"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-info"><span class="skill-name">Adobe After Effects</span><span class="skill-level">80%</span></div>
+                        <div class="skill-bar"><div class="skill-fill" data-width="80%" style="width:0"></div></div>
+                    </div>
+                </div>
+                <!-- 设计能力 -->
+                <div class="skill-category">
+                    <div class="skill-cat-icon">💡</div>
+                    <h3 class="skill-cat-title">Design Skills 设计能力</h3>
+                    <div class="skill-item">
+                        <div class="skill-info"><span class="skill-name">UI/UX Design</span><span class="skill-level">92%</span></div>
+                        <div class="skill-bar"><div class="skill-fill" data-width="92%" style="width:0"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-info"><span class="skill-name">Brand Identity 品牌设计</span><span class="skill-level">88%</span></div>
+                        <div class="skill-bar"><div class="skill-fill" data-width="88%" style="width:0"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-info"><span class="skill-name">Motion Graphics 动效</span><span class="skill-level">85%</span></div>
+                        <div class="skill-bar"><div class="skill-fill" data-width="85%" style="width:0"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-info"><span class="skill-name">Design Systems 设计系统</span><span class="skill-level">82%</span></div>
+                        <div class="skill-bar"><div class="skill-fill" data-width="82%" style="width:0"></div></div>
+                    </div>
+                </div>
+                <!-- 其他技能 -->
+                <div class="skill-category">
+                    <div class="skill-cat-icon">🚀</div>
+                    <h3 class="skill-cat-title">Other 其他技能</h3>
+                    <div class="skill-item">
+                        <div class="skill-info"><span class="skill-name">HTML / CSS</span><span class="skill-level">78%</span></div>
+                        <div class="skill-bar"><div class="skill-fill" data-width="78%" style="width:0"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-info"><span class="skill-name">3D Modeling 建模</span><span class="skill-level">70%</span></div>
+                        <div class="skill-bar"><div class="skill-fill" data-width="70%" style="width:0"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-info"><span class="skill-name">Photography 摄影</span><span class="skill-level">75%</span></div>
+                        <div class="skill-bar"><div class="skill-fill" data-width="75%" style="width:0"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-info"><span class="skill-name">Team Leadership 团队管理</span><span class="skill-level">85%</span></div>
+                        <div class="skill-bar"><div class="skill-fill" data-width="85%" style="width:0"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+     PROJECTS 作品展示
+     ======================================== -->
+    <section class="section" id="projects">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <p class="section-label">My Works 作品展示</p>
+                <h2 class="section-title">Selected Projects 精选项目</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="projects-grid reveal">
+                <div class="project-card">
+                    <div class="project-thumb">
+                        🏦
+                        <div class="project-overlay">
+                            <span class="project-overlay-text">View Details 查看详情 →</span>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h4>FinTech App Redesign</h4>
+                        <p class="project-subtitle">金融科技应用重设计 / UI/UX Design</p>
+                        <div class="project-tags">
+                            <span class="tag">Figma</span>
+                            <span class="tag">UI/UX</span>
+                            <span class="tag">Prototyping</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-thumb">
+                        🌐
+                        <div class="project-overlay">
+                            <span class="project-overlay-text">View Details 查看详情 →</span>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h4>E-Commerce Platform</h4>
+                        <p class="project-subtitle">电商平台设计 / Brand & Web Design</p>
+                        <div class="project-tags">
+                            <span class="tag">Branding</span>
+                            <span class="tag">Web Design</span>
+                            <span class="tag">Illustrator</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-thumb">
+                        📱
+                        <div class="project-overlay">
+                            <span class="project-overlay-text">View Details 查看详情 →</span>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h4>Health & Wellness App</h4>
+                        <p class="project-subtitle">健康管理应用 / Mobile App Design</p>
+                        <div class="project-tags">
+                            <span class="tag">Mobile</span>
+                            <span class="tag">UI Design</span>
+                            <span class="tag">After Effects</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-thumb">
+                        🎬
+                        <div class="project-overlay">
+                            <span class="project-overlay-text">View Details 查看详情 →</span>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h4>Brand Identity System</h4>
+                        <p class="project-subtitle">品牌视觉系统 / Visual Identity</p>
+                        <div class="project-tags">
+                            <span class="tag">Branding</span>
+                            <span class="tag">Design System</span>
+                            <span class="tag">Motion</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+     EXPERIENCE 工作经历
+     ======================================== -->
+    <section class="section" id="experience">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <p class="section-label">Experience 经历</p>
+                <h2 class="section-title">Career Path 职业历程</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="timeline reveal">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">2023 — Present 至今</div>
+                    <h3 class="timeline-role">Senior Designer 资深设计师</h3>
+                    <p class="timeline-company">TechVision Studio · Shanghai 上海</p>
+                    <p class="timeline-desc">
+                        负责核心产品的 UI/UX 设计，主导设计系统建设，管理 3 人设计团队。
+                        <em>Led UI/UX design for core products, built design systems, managed a team of 3 designers.</em>
+                    </p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">2020 — 2023</div>
+                    <h3 class="timeline-role">UI Designer 界面设计师</h3>
+                    <p class="timeline-company">Nova Creative Agency · Beijing 北京</p>
+                    <p class="timeline-desc">
+                        为多个行业客户提供品牌设计和数字产品设计服务，涵盖金融、教育、医疗等领域。
+                        <em>Delivered brand and digital product design for clients across finance, education, and healthcare.</em>
+                    </p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">2018 — 2020</div>
+                    <h3 class="timeline-role">Junior Designer 助理设计师</h3>
+                    <p class="timeline-company">PixelCraft Studio · Hangzhou 杭州</p>
+                    <p class="timeline-desc">
+                        参与多个移动应用和网页设计项目，快速积累视觉设计和用户体验基础。
+                        <em>Contributed to mobile app and web design projects, building foundations in visual design and UX.</em>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+     CONTACT 联系
+     ======================================== -->
+    <section class="section" id="contact">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <p class="section-label">Contact 联系我</p>
+                <h2 class="section-title">Get In Touch 保持联系</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="contact-grid reveal">
+                <form class="contact-form" id="contactForm" onsubmit="handleSubmit(event)">
+                    <div class="form-group">
+                        <label>Your Name 姓名</label>
+                        <input type="text" placeholder="Please enter your name 请输入姓名" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email 邮箱</label>
+                        <input type="email" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Message 留言</label>
+                        <textarea placeholder="Your message... 请输入留言内容" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="align-self: flex-start;">
+                        Send Message 发送
+                    </button>
+                </form>
+                <div class="contact-info">
+                    <div>
+                        <div class="contact-item">
+                            <div class="contact-icon">📧</div>
+                            <div class="contact-text">
+                                <h5>Email 邮箱</h5>
+                                <span>alex.chen@design.me</span>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">📍</div>
+                            <div class="contact-text">
+                                <h5>Location 所在地</h5>
+                                <span>Shanghai, China 中国上海</span>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">💼</div>
+                            <div class="contact-text">
+                                <h5>Available 状态</h5>
+                                <span>Freelance & Full-time 自由职业/全职</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="social-links">
+                        <a href="#" class="social-link" title="Behance">Be</a>
+                        <a href="#" class="social-link" title="Dribbble">Dr</a>
+                        <a href="#" class="social-link" title="LinkedIn">in</a>
+                        <a href="#" class="social-link" title="GitHub">GH</a>
+                        <a href="#" class="social-link" title="Twitter / X">𝕏</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+     FOOTER 页脚
+     ======================================== -->
+    <footer class="footer">
+        <p>© 2026 Alex Chen · Creative Designer 创意设计师 · All rights reserved.</p>
+        <p style="margin-top: 6px; opacity: 0.6;">Designed with passion. Built with code. 用心设计，用代码构建。</p>
+    </footer>
+
+    <!-- ========================================
+     SCRIPTS
+     ======================================== -->
+    <script>
+        // ==========================================
+        // PARTICLE CANVAS 粒子背景
+        // ==========================================
+        (function() {
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let mouse = { x: null, y: null, radius: 150 };
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', () => {
+                resize();
+                initParticles();
+            });
+
+            class Particle {
+                constructor() {
+                    this.reset();
+                    // stagger initial positions
+                    this.y = Math.random() * canvas.height;
+                }
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2 + 0.5;
+                    this.speedX = (Math.random() - 0.5) * 0.6;
+                    this.speedY = (Math.random() - 0.5) * 0.6;
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                    // mouse interaction
+                    if (mouse.x !== null && mouse.y !== null) {
+                        const dx = this.x - mouse.x;
+                        const dy = this.y - mouse.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < mouse.radius) {
+                            const force = (mouse.radius - dist) / mouse.radius;
+                            this.x += (dx / dist) * force * 1.5;
+                            this.y += (dy / dist) * force * 1.5;
+                        }
+                    }
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(59, 130, 246, 0.6)';
+                    ctx.fill();
+                }
+            }
+
+            function initParticles() {
+                const count = Math.min(Math.floor((canvas.width * canvas.height) / 12000), 120);
+                particles = Array.from({ length: count }, () => new Particle());
+            }
+            initParticles();
+
+            function connectParticles() {
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 120) {
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(59, 130, 246, ${0.12 * (1 - dist / 120)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                connectParticles();
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            window.addEventListener('mousemove', e => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            });
+            window.addEventListener('mouseleave', () => {
+                mouse.x = null;
+                mouse.y = null;
+            });
+            // touch support
+            window.addEventListener('touchmove', e => {
+                mouse.x = e.touches[0].clientX;
+                mouse.y = e.touches[0].clientY;
+            }, { passive: true });
+            window.addEventListener('touchend', () => {
+                mouse.x = null;
+                mouse.y = null;
+            });
+        })();
+
+        // ==========================================
+        // TYPING EFFECT 打字机效果
+        // ==========================================
+        (function() {
+            const texts = [
+                'Creating digital experiences...',
+                '打造令人难忘的视觉体验...',
+                'Designing with purpose & passion...',
+                'Where creativity meets technology...',
+            ];
+            const el = document.getElementById('typingText');
+            let textIdx = 0, charIdx = 0, isDeleting = false;
+            const typeSpeed = 80, deleteSpeed = 40, pauseTime = 2000;
+
+            function type() {
+                const current = texts[textIdx];
+                if (isDeleting) {
+                    el.textContent = current.substring(0, charIdx - 1);
+                    charIdx--;
+                } else {
+                    el.textContent = current.substring(0, charIdx + 1);
+                    charIdx++;
+                }
+
+                let delay = isDeleting ? deleteSpeed : typeSpeed;
+
+                if (!isDeleting && charIdx === current.length) {
+                    delay = pauseTime;
+                    isDeleting = true;
+                } else if (isDeleting && charIdx === 0) {
+                    isDeleting = false;
+                    textIdx = (textIdx + 1) % texts.length;
+                    delay = 300;
+                }
+
+                setTimeout(type, delay);
+            }
+            setTimeout(type, 500);
+        })();
+
+        // ==========================================
+        // NAVBAR SCROLL EFFECT 导航栏滚动效果
+        // ==========================================
+        (function() {
+            const navbar = document.getElementById('navbar');
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-links a');
+
+            window.addEventListener('scroll', () => {
+                // 毛玻璃效果
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+
+                // 激活对应的导航项
+                let current = '';
+                sections.forEach(section => {
+                    const top = section.offsetTop - 120;
+                    if (window.scrollY >= top) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + current) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        })();
+
+        // ==========================================
+        // MOBILE NAV 移动端菜单
+        // ==========================================
+        (function() {
+            const hamburger = document.getElementById('hamburger');
+            const mobileNav = document.getElementById('mobileNav');
+
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('active');
+                mobileNav.classList.toggle('active');
+            });
+        })();
+
+        function closeMobileNav() {
+            document.getElementById('hamburger').classList.remove('active');
+            document.getElementById('mobileNav').classList.remove('active');
+        }
+
+        // ==========================================
+        // SCROLL REVEAL 滚动渐入动画
+        // ==========================================
+        (function() {
+            const reveals = document.querySelectorAll('.reveal');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        // 触发内部技能条动画
+                        const skillFills = entry.target.querySelectorAll('.skill-fill');
+                        skillFills.forEach(fill => {
+                            fill.style.width = fill.getAttribute('data-width');
+                        });
+                    }
+                });
+            }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+            reveals.forEach(el => observer.observe(el));
+        })();
+
+        // ==========================================
+        // CONTACT FORM 联系表单
+        // ==========================================
+        function handleSubmit(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+            btn.textContent = 'Sent! 已发送 ✓';
+            btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+            btn.disabled = true;
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+                btn.disabled = false;
+                e.target.reset();
+            }, 2500);
+        }
+
+        // ==========================================
+        // SMOOTH SCROLL OFFSET 平滑滚动偏移
+        // ==========================================
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offset = 80;
+                    const position = target.getBoundingClientRect().top + window.scrollY - offset;
+                    window.scrollTo({ top: position, behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
