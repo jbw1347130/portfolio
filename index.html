@@ -24,6 +24,24 @@
             --glass: rgba(17, 24, 39, 0.85);
             --radius: 12px;
             --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --glow-rgb: 59,130,246;
+        }
+
+        /* Light Theme */
+        [data-theme="light"] {
+            --bg-primary: #f0f4ff;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent: #2563eb;
+            --accent-light: #3b82f6;
+            --accent-glow: rgba(37, 99, 235, 0.3);
+            --cyan: #0891b2;
+            --purple: #6366f1;
+            --border: rgba(37, 99, 235, 0.2);
+            --glass: rgba(255, 255, 255, 0.9);
+            --glow-rgb: 37,99,235;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -858,12 +876,196 @@
             .hero-cta { flex-direction: column; align-items: center; }
             .btn { width: 100%; max-width: 280px; text-align: center; }
         }
+
+        /* ========================================
+           THEME TOGGLE 主题切换
+           ======================================== */
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 20px;
+        }
+        .theme-toggle:hover {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.1);
+            transform: rotate(30deg);
+        }
+
+        /* ========================================
+           MOUSE GLOW 鼠标光晕
+           ======================================== */
+        #mouse-glow {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            width: 300px; height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(var(--glow-rgb), 0.12) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+            opacity: 0;
+        }
+
+        /* ========================================
+           SCROLL PROGRESS 滚动进度条
+           ======================================== */
+        #scroll-progress {
+            position: fixed;
+            top: 0; left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--cyan), var(--purple));
+            z-index: 10000;
+            transition: width 0.1s linear;
+            border-radius: 0 2px 2px 0;
+        }
+
+        /* ========================================
+           BACK TO TOP 回到顶部
+           ======================================== */
+        #back-to-top {
+            position: fixed;
+            bottom: 32px; right: 32px;
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 1.3rem;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            box-shadow: 0 4px 20px var(--accent-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        #back-to-top:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.6);
+        }
+
+        /* ========================================
+           PROJECT FILTER 项目筛选
+           ======================================== */
+        .filter-bar {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 32px;
+        }
+        .filter-btn {
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            box-shadow: 0 2px 12px var(--accent-glow);
+        }
+
+        /* ========================================
+           3D TILT EFFECT 3D卡片倾斜
+           ======================================== */
+        .project-card {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        /* ========================================
+           LIGHT THEME OVERRIDES
+           ======================================== */
+        [data-theme="light"] .navbar.scrolled {
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        [data-theme="light"] .hero-name {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #0891b2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+        [data-theme="light"] .project-thumb {
+            background: linear-gradient(135deg, #e0e7ff, #dbeafe);
+        }
+        [data-theme="light"] .project-thumb::after {
+            background: linear-gradient(180deg, transparent 0%, rgba(240, 244, 255, 0.6) 100%);
+        }
+        [data-theme="light"] .project-overlay {
+            background: rgba(240, 244, 255, 0.9);
+        }
+        [data-theme="light"] #particle-canvas {
+            opacity: 0.5;
+        }
+        [data-theme="light"] .tag {
+            background: rgba(37, 99, 235, 0.08);
+        }
+        [data-theme="light"] .skill-bar {
+            background: rgba(0, 0, 0, 0.06);
+        }
+        [data-theme="light"] .form-group input,
+        [data-theme="light"] .form-group textarea {
+            background: #f8fafc;
+        }
+        [data-theme="light"] .mobile-nav {
+            background: rgba(240, 244, 255, 0.97);
+        }
+        [data-theme="light"] .contact-icon {
+            background: rgba(37, 99, 235, 0.08);
+        }
+        [data-theme="light"] .social-link {
+            background: #f8fafc;
+        }
+
+        /* ========================================
+           ADDITIONAL RESPONSIVE
+           ======================================== */
+        @media (max-width: 968px) {
+            #back-to-top { bottom: 20px; right: 20px; width: 42px; height: 42px; font-size: 1.1rem; }
+            .theme-toggle { margin-left: 0; }
+            #mouse-glow { display: none; }
+        }
+        @media (max-width: 480px) {
+            .filter-bar { gap: 6px; }
+            .filter-btn { padding: 6px 14px; font-size: 0.75rem; }
+        }
     </style>
 </head>
-<body>
+<body data-theme="dark">
 
     <!-- Canvas 粒子背景 -->
     <canvas id="particle-canvas"></canvas>
+
+    <!-- 鼠标光晕 -->
+    <div id="mouse-glow"></div>
+
+    <!-- 滚动进度条 -->
+    <div id="scroll-progress"></div>
 
     <!-- ========================================
      NAVBAR 导航栏
@@ -881,6 +1083,7 @@
             <button class="hamburger" id="hamburger" aria-label="Menu">
                 <span></span><span></span><span></span>
             </button>
+            <button class="theme-toggle" id="themeToggle" aria-label="Theme Toggle" title="Toggle Theme 切换主题">🌙</button>
         </div>
     </nav>
 
@@ -1049,8 +1252,16 @@
                 <h2 class="section-title">Selected Projects 精选项目</h2>
                 <div class="section-line"></div>
             </div>
+            <div class="filter-bar reveal">
+                <button class="filter-btn active" data-filter="all">All 全部</button>
+                <button class="filter-btn" data-filter="uiux">UI/UX</button>
+                <button class="filter-btn" data-filter="branding">Branding 品牌</button>
+                <button class="filter-btn" data-filter="mobile">Mobile 移动端</button>
+                <button class="filter-btn" data-filter="web">Web Design</button>
+                <button class="filter-btn" data-filter="motion">Motion 动效</button>
+            </div>
             <div class="projects-grid reveal">
-                <div class="project-card">
+                <div class="project-card" data-categories="uiux">
                     <div class="project-thumb">
                         🏦
                         <div class="project-overlay">
@@ -1067,7 +1278,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="project-card">
+                <div class="project-card" data-categories="branding web">
                     <div class="project-thumb">
                         🌐
                         <div class="project-overlay">
@@ -1084,7 +1295,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="project-card">
+                <div class="project-card" data-categories="mobile uiux">
                     <div class="project-thumb">
                         📱
                         <div class="project-overlay">
@@ -1101,7 +1312,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="project-card">
+                <div class="project-card" data-categories="branding motion">
                     <div class="project-thumb">
                         🎬
                         <div class="project-overlay">
@@ -1234,6 +1445,9 @@
     <!-- ========================================
      FOOTER 页脚
      ======================================== -->
+    <!-- 回到顶部 -->
+    <button id="back-to-top" aria-label="Back to top" title="Back to top 回到顶部">↑</button>
+
     <footer class="footer">
         <p>© 2026 Alex Chen · Creative Designer 创意设计师 · All rights reserved.</p>
         <p style="margin-top: 6px; opacity: 0.6;">Designed with passion. Built with code. 用心设计，用代码构建。</p>
@@ -1495,6 +1709,199 @@
                 }
             });
         });
+
+        // ==========================================
+        // THEME TOGGLE 暗色/亮色模式切换
+        // ==========================================
+        (function() {
+            const toggle = document.getElementById('themeToggle');
+            const body = document.body;
+
+            // Load saved theme
+            const saved = localStorage.getItem('theme');
+            if (saved === 'light') {
+                body.setAttribute('data-theme', 'light');
+                toggle.textContent = '☀️';
+            }
+
+            toggle.addEventListener('click', () => {
+                const isDark = body.getAttribute('data-theme') === 'dark';
+                if (isDark) {
+                    body.setAttribute('data-theme', 'light');
+                    toggle.textContent = '☀️';
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    body.setAttribute('data-theme', 'dark');
+                    toggle.textContent = '🌙';
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        })();
+
+        // ==========================================
+        // MOUSE GLOW 鼠标光晕跟随
+        // ==========================================
+        (function() {
+            const glow = document.getElementById('mouse-glow');
+            let ticking = false;
+
+            document.addEventListener('mousemove', (e) => {
+                if (!ticking) {
+                    requestAnimationFrame(() => {
+                        glow.style.opacity = '1';
+                        glow.style.left = e.clientX + 'px';
+                        glow.style.top = e.clientY + 'px';
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+
+            document.addEventListener('mouseleave', () => {
+                glow.style.opacity = '0';
+            });
+
+            document.addEventListener('mouseenter', () => {
+                glow.style.opacity = '1';
+            });
+        })();
+
+        // ==========================================
+        // 3D TILT ON PROJECT CARDS 3D卡片倾斜
+        // ==========================================
+        (function() {
+            const cards = document.querySelectorAll('.project-card');
+
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -8;
+                    const rotateY = ((x - centerX) / centerX) * 8;
+
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px)`;
+                    card.style.boxShadow = `
+                        ${(x - centerX) / 10 * -1}px ${(y - centerY) / 10 * -1}px 40px rgba(59, 130, 246, 0.15),
+                        0 12px 40px rgba(59, 130, 246, 0.1)
+                    `;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
+                    card.style.boxShadow = '';
+                });
+            });
+        })();
+
+        // ==========================================
+        // SCROLL PROGRESS + BACK TO TOP 滚动进度条 + 回到顶部
+        // ==========================================
+        (function() {
+            const progressBar = document.getElementById('scroll-progress');
+            const backToTop = document.getElementById('back-to-top');
+
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.scrollY;
+                const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+                progressBar.style.width = Math.min(progress, 100) + '%';
+
+                // Show/hide back to top
+                if (scrollTop > 500) {
+                    backToTop.classList.add('visible');
+                } else {
+                    backToTop.classList.remove('visible');
+                }
+            });
+
+            backToTop.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        })();
+
+        // ==========================================
+        // NUMBER COUNT-UP 数字滚动动画
+        // ==========================================
+        (function() {
+            const statNumbers = document.querySelectorAll('.stat-number');
+            let counted = false;
+
+            function animateCount(el) {
+                const text = el.textContent;
+                const match = text.match(/(\d+)(\+?)/);
+                if (!match) return;
+
+                const target = parseInt(match[1]);
+                const suffix = match[2] || '';
+                let current = 0;
+                const duration = 1500;
+                const steps = 60;
+                const increment = target / steps;
+                const interval = duration / steps;
+
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    el.textContent = Math.floor(current) + suffix;
+                }, interval);
+            }
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !counted) {
+                        counted = true;
+                        statNumbers.forEach(num => animateCount(num));
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            const statsRow = document.querySelector('.about-stats');
+            if (statsRow) observer.observe(statsRow);
+        })();
+
+        // ==========================================
+        // PROJECT FILTERING 项目分类筛选
+        // ==========================================
+        (function() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const projectCards = document.querySelectorAll('.project-card');
+            const grid = document.querySelector('.projects-grid');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Update active button
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const filter = btn.getAttribute('data-filter');
+
+                    // Add animation class
+                    grid.classList.add('filtering');
+
+                    projectCards.forEach(card => {
+                        if (filter === 'all') {
+                            card.classList.remove('hidden');
+                        } else {
+                            const cats = card.getAttribute('data-categories');
+                            if (cats && cats.includes(filter)) {
+                                card.classList.remove('hidden');
+                            } else {
+                                card.classList.add('hidden');
+                            }
+                        }
+                    });
+
+                    // Remove animation class after transition
+                    setTimeout(() => grid.classList.remove('filtering'), 400);
+                });
+            });
+        })();
     </script>
 </body>
 </html>
